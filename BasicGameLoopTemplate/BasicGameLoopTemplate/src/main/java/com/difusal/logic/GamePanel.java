@@ -1,11 +1,11 @@
 package com.difusal.logic;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -33,7 +33,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.droid);
 
         // create droid
-        droid = new Droid(bitmap, new Point(0, 0));
+        droid = new Droid(bitmap, new Point(getWidth() / 2, getHeight() / 2));
 
         // create the game loop thread
         thread = new MainThread(getHolder(), this);
@@ -42,12 +42,23 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         setFocusable(true);
     }
 
+    // the fps to be displayed
+    private String avgFps;
+
+    public void setAvgFps(String avgFps) {
+        this.avgFps = avgFps;
+    }
+
     /**
      * Game update method.
      */
     public void update() {
         // Update the droid
         droid.update();
+
+        // Reset droid coordinates
+        if (droid.getCoordinates().equals(new Point(0, 0)))
+            droid.setCoordinates(getWidth() / 2, getHeight() / 2);
     }
 
     /**
@@ -56,6 +67,17 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     public void render(Canvas canvas) {
         canvas.drawColor(Color.BLACK);
         droid.draw(canvas);
+
+        // display fps
+        displayFps(canvas, avgFps);
+    }
+
+    private void displayFps(Canvas canvas, String fps) {
+        if (canvas != null && fps != null) {
+            Paint paint = new Paint();
+            paint.setARGB(255, 255, 255, 255);
+            canvas.drawText(fps, this.getWidth() - 50, 20, paint);
+        }
     }
 
     @Override
@@ -96,13 +118,15 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             // delegating event handling to the droid
             droid.handleActionDown((int) event.getX(), (int) event.getY());
 
+            Log.d(TAG, "Coordinates: x=" + event.getX() + ",y=" + event.getY());
+
+            /*
             // check if in the lower part of the screen we exit
             if (event.getY() > getHeight() - 50) {
                 MainThread.setRunning(false);
                 ((Activity) getContext()).finish();
-            } else {
-                Log.d(TAG, "Coordinates: x=" + event.getX() + ",y=" + event.getY());
             }
+            */
         }
 
         if (event.getAction() == MotionEvent.ACTION_MOVE) {

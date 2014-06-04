@@ -14,12 +14,21 @@ public class Droid {
         this.coordinates = new Point(coordinates);
     }
 
+    public Point getCoordinates() {
+        return coordinates;
+    }
+
     public void setX(int x) {
         this.coordinates.x = x;
     }
 
     public void setY(int y) {
         this.coordinates.y = y;
+    }
+
+    public void setCoordinates(int x, int y) {
+        setX(x);
+        setY(y);
     }
 
     public boolean isTouched() {
