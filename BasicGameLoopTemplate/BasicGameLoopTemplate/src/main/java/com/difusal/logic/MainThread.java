@@ -1,5 +1,6 @@
 package com.difusal.logic;
 
+import android.graphics.Canvas;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
@@ -10,14 +11,27 @@ import android.view.SurfaceHolder;
 public class MainThread extends Thread {
     private static final String TAG = MainThread.class.getSimpleName();
 
+    // desired fps
+    private final static int MAX_FPS = 50;
+
+    // maximum number of frames to be skipped
+    private final static int MAX_FRAME_SKIPS = 5;
+
+    // the frame period
+    private final static int FRAME_PERIOD = 1000 / MAX_FPS;
+
     // Surface holder that can access the physical surface
-    private SurfaceHolder surfaceHolder;
+    private final SurfaceHolder surfaceHolder;
 
     // The actual view that handles inputs and draws to the surface
     private GamePanel gamePanel;
 
     // Flag to hold game state
-    private boolean running;
+    private static boolean running;
+
+    public static void setRunning(boolean running) {
+        MainThread.running = running;
+    }
 
     public MainThread(SurfaceHolder surfaceHolder, GamePanel gamePanel) {
         super();
@@ -25,23 +39,74 @@ public class MainThread extends Thread {
         this.gamePanel = gamePanel;
     }
 
-    public void setRunning(boolean running) {
-        this.running = running;
-    }
-
     @Override
     public void run() {
-        long tickCount = 0L;
-
+        Canvas canvas;
         Log.d(TAG, "Starting game loop");
+
+        // the time when the cycle begun
+        long beginTime;
+
+        // the time it took for the cycle to execute
+        long timeDiff;
+
+        // ms to sleep (< 0 if we're behind)
+        int sleepTime;
+
+        // number of frames being skipped
+        int framesSkipped;
+
         while (running) {
-            tickCount++;
+            canvas = null;
 
-            // update game state
+            // try locking the canvas for exclusive pixel editing in the surface
+            try {
+                canvas = this.surfaceHolder.lockCanvas();
 
-            // render state to the screen
+                synchronized (surfaceHolder) {
+                    beginTime = System.currentTimeMillis();
+
+                    // reset the frames skipped
+                    framesSkipped = 0;
+
+                    // update game state
+                    this.gamePanel.update();
+
+                    // render state to the screen: draws the canvas on the panel
+                    this.gamePanel.render(canvas);
+
+                    // calculate how long did the cycle take
+                    timeDiff = System.currentTimeMillis() - beginTime;
+
+                    // calculate sleep time
+                    sleepTime = (int) (FRAME_PERIOD - timeDiff);
+
+                    if (sleepTime > 0) {
+                        // if sleepTime > 0 we're OK
+                        try {
+                            // send the thread to sleep for a short period
+                            // very useful for battery saving
+                            Thread.sleep(sleepTime);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    // we need to catch up
+                    while (sleepTime < 0 && framesSkipped < MAX_FRAME_SKIPS) {
+                        // update without rendering
+                        this.gamePanel.update();
+
+                        // add frame period to check if in next frame
+                        sleepTime += FRAME_PERIOD;
+                        framesSkipped++;
+                    }
+                }
+            } finally {
+                // in case of an exception the surface is not left in an inconsistent state
+                if (canvas != null)
+                    surfaceHolder.unlockCanvasAndPost(canvas);
+            }
         }
-
-        Log.d(TAG, "Game loop executed " + tickCount + " times");
     }
 }
