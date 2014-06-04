@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/BasicGameLoopTemplate.iml" filepath="$PROJECT_DIR$/BasicGameLoopTemplate.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BasicGameLoopTemplate/BasicGameLoopTemplate-BasicGameLoopTemplate.iml" filepath="$PROJECT_DIR$/BasicGameLoopTemplate/BasicGameLoopTemplate-BasicGameLoopTemplate.iml" />
+    </modules>
+  </component>
+</project>
+
