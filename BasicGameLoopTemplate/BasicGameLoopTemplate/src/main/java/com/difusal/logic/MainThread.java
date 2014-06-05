@@ -22,7 +22,7 @@ public class MainThread extends Thread {
     // the frame period
     private final static int FRAME_PERIOD = 1000 / MAX_FPS;
 
-    // Stuff for stats */
+    // Stuff for stats
     private DecimalFormat df = new DecimalFormat("0.##");  // 2 dp
 
     // we'll be reading the stats every second
@@ -163,7 +163,7 @@ public class MainThread extends Thread {
         statusIntervalTimer += (System.currentTimeMillis() - statusIntervalTimer);
 
         if (statusIntervalTimer >= lastStatusStore + STAT_INTERVAL) {
-            // calculate the actual frames pers status check interval
+            // calculate the actual frames per status check interval
             double actualFps = (double) (frameCountPerStatCycle / (STAT_INTERVAL / 1000));
 
             //stores the latest fps in the array
@@ -185,8 +185,6 @@ public class MainThread extends Thread {
                 averageFps = totalFps / statsCount;
             else
                 averageFps = totalFps / FPS_HISTORY_NR;
-
-            // saving the number of total frames skipped
 
             // resetting the counters after a status record (1 sec)
             statusIntervalTimer = 0;
