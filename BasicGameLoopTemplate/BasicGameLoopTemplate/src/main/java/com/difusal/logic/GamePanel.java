@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Point;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -42,13 +41,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         setFocusable(true);
     }
 
-    // the fps to be displayed
-    private String avgFps;
-
-    public void setAvgFps(String avgFps) {
-        this.avgFps = avgFps;
-    }
-
     /**
      * Game update method.
      */
@@ -67,17 +59,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     public void render(Canvas canvas) {
         canvas.drawColor(Color.BLACK);
         droid.draw(canvas);
-
-        // display fps
-        displayFps(canvas, avgFps);
-    }
-
-    private void displayFps(Canvas canvas, String fps) {
-        if (canvas != null && fps != null) {
-            Paint paint = new Paint();
-            paint.setARGB(255, 255, 255, 255);
-            canvas.drawText(fps, this.getWidth() - 50, 20, paint);
-        }
     }
 
     @Override
