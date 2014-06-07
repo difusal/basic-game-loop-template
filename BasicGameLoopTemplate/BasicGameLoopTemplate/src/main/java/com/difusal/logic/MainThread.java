@@ -41,8 +41,8 @@ public class MainThread extends Thread {
 
     @Override
     public void run() {
-        Canvas canvas;
         Log.d(TAG, "Starting game loop");
+        Canvas canvas;
 
         // the time when the cycle begun
         long beginTime;

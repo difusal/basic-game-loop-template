@@ -63,7 +63,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
-        //if it is the first time the thread starts
+        // if it is the first time the thread starts
         if (thread.getState() == Thread.State.TERMINATED)
             thread = new MainThread(getHolder(), this);
 
@@ -125,6 +125,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 droid.setTouched(false);
             }
         }
+        
         return true;
     }
 }
